@@ -33,7 +33,7 @@ export default function App() {
             componentProps: {
               // 透传给组件的prop
               placeholder: "输入wtf隐藏性别",
-              onChange(e) {
+              onChange(e: any) {
                 console.log("input change:", e.target.value);
               },
               onBlur() {
@@ -63,6 +63,7 @@ export default function App() {
             },
             type: "select",
             component: "select",
+            labelTip: "label 提示",
             rules: [
               {
                 validator: (v: any) => {
@@ -121,6 +122,20 @@ export default function App() {
             wrapperProps: {
               required: true
             }
+          },
+          {
+            index: 4,
+            label: "test.a",
+            key: "test.a",
+            type: "input",
+            component: "input"
+          },
+          {
+            index: 5,
+            label: "test.b",
+            key: "test.b",
+            type: "input",
+            component: "input"
           }
         ]}
         onChange={vs => console.log("vs:", vs)}

@@ -1,4 +1,4 @@
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Tooltip, Icon } from "antd";
 import * as React from "react";
 
 const FormItem = Form.Item;
@@ -18,6 +18,7 @@ export const FormSelect = ({
       key,
       value,
       label,
+      labelTip,
       dataSource,
       visible,
       componentProps,
@@ -29,13 +30,24 @@ export const FormSelect = ({
       (componentProps.onChange || noop)(...args);
     };
     registerRequiredCheck(requiredCheck);
+    let _lable = label;
+    if (labelTip) {
+      _label = (
+        <span>
+          {label}&nbsp;
+          <Tooltip title={labelTip}>
+            <Icon type="question-circle-o" />
+          </Tooltip>
+        </span>
+      );
+    }
     const source = dataSource.static;
     console.count("render select", key);
     return (
       <FormItem
         colon
         extra={"extra"}
-        label={label}
+        label={_label}
         hasFeedback
         className={visible ? "" : "hide"}
         validateStatus={valid[0]}

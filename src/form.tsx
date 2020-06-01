@@ -84,19 +84,20 @@ const RenderFields = ({ fields, form }: any) => {
   );
 };
 
+type Operator =
+  | "="
+  | "!="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "contains"
+  | "not_contains"
+  | "empty"
+  | "not_empty";
 interface CheckItem {
   field: string;
-  operator:
-    | ">"
-    | ">="
-    | "="
-    | "<="
-    | "<"
-    | "!="
-    | "contains"
-    | "not_contains"
-    | "empty"
-    | "not_empty";
+  operator: Operator;
   value?: string | number | boolean;
   valueType: "string" | "number" | "boolean";
 }
@@ -166,7 +167,6 @@ const genCheckFn = (orList: Function[][]) => {
 
 // { pattern: '', type: 'string | number | email', whitespace, enum, len, min: 1, max: 12, equal: 'string:sss' | 'number:123' | 'boolean:false', not_equal: '', msg: '' },
 const rules = {
-  type: "string",
   pattern(v, rule, data) {
     return [new RegExp(rule.pattern).test(v), rule.msg || "not match pattern"];
   },
@@ -208,15 +208,15 @@ const rules = {
 
 const getCheckListFromRule = rule => {
   const checkList = [];
-  rule.pattern && checkList.push(rules.pattern);
-  rule.enum && checkList.push(rules.enum);
-  rule.string && checkList.push(rules.string);
-  rule.number && checkList.push(rules.number);
-  rule.len && checkList.push(rules.len);
-  rule.min && checkList.push(rules.min);
-  rule.max && checkList.push(rules.max);
-  rule.equalWith && checkList.push(rules.equalWith);
-  rule.validator && checkList.push(rules.validator);
+  rule.pattern !== undefined && checkList.push(rules.pattern);
+  rule.enum !== undefined && checkList.push(rules.enum);
+  rule.string !== undefined && checkList.push(rules.string);
+  rule.number !== undefined && checkList.push(rules.number);
+  rule.len !== undefined && checkList.push(rules.len);
+  rule.min !== undefined && checkList.push(rules.min);
+  rule.max !== undefined && checkList.push(rules.max);
+  rule.equalWith !== undefined && checkList.push(rules.equalWith);
+  rule.validator !== undefined && checkList.push(rules.validator);
   return checkList;
 };
 
@@ -264,6 +264,7 @@ interface FormField {
   type: string;
   component: string;
   value?: any;
+  labelTip?: string;
   defaultValue?: any; // 重置时不会清掉
   initialValue?: any; // 仅在mount后set，重置会清掉
   rules?: Rule[];
@@ -295,7 +296,6 @@ interface InnerFormField extends FormField {
   validate(data: any): ValidateResult;
   checkRemove(data: any): boolean;
   checkHide(data: any): boolean;
-  validate(data: any): ValidateResult;
   registerRequiredCheck: (a: any) => any;
   getData: () => any;
 }
@@ -303,7 +303,9 @@ interface InnerFormField extends FormField {
 interface FormProp {
   formRef: any;
   fields: FormField[];
-  value?: Obj;
+  value?: {
+    [k: string]: any;
+  };
   onChange(vs: any): any;
 }
 export const Form = ({
@@ -438,7 +440,9 @@ export const Form = ({
     getData: () => {
       const data = {};
       Object.keys(fieldMapRef.current).forEach(k => {
-        data[k] = fieldMapRef.current[k].getData();
+        // data[k] = fieldMapRef.current[k].getData();
+        console.log(fieldMapRef.current);
+        set(data, k, fieldMapRef.current[k].getData());
       });
       return data;
       // return cloneDeep(formDataRef.current);
@@ -525,8 +529,8 @@ export const Form = ({
         if (item.hideWhen) {
           item.checkHide = genCheckFn(
             genOrList(item.hideWhen, con => {
-              item._hideWatchers.push(con.field);
-              fieldMap[con.field]._hideSubscribes.push(item.key);
+              item._hideWatchers.push(con.field); // 依赖于谁，做提示用
+              fieldMap[con.field]._hideSubscribes.push(item.key); // 被谁依赖，触发依赖的更新
             })
           );
         } else {
@@ -536,8 +540,8 @@ export const Form = ({
         if (item.removeWhen) {
           item.checkRemove = genCheckFn(
             genOrList(item.removeWhen, con => {
-              fieldMap[con.field]._removeSubscribes.push(item.key);
               item._removeWatchers.push(con.field);
+              fieldMap[con.field]._removeSubscribes.push(item.key);
             })
           );
         } else {
