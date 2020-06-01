@@ -1,0 +1,15 @@
+import React from "react";
+
+export const isPromise = (obj: any) => {
+  return (
+    !!obj &&
+    (typeof obj === "object" || typeof obj === "function") &&
+    typeof obj.then === "function"
+  );
+};
+
+export const useMount = fn => {
+  React.useEffect(() => {
+    fn();
+  }, []);
+};
