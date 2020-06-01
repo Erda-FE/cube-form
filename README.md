@@ -17,8 +17,8 @@ https://codesandbox.io/s/blissful-resonance-bgpfn?file=/src/form.tsx
 
 
 ## 待实现特性：
-* 异步数据源以及keyPath、valuePath配置
-* 其他字段变化时，控制当前字段的禁用：disableWhen
-* 新建、更新模式下，是否隐藏、禁用
-* Form.Submit、Form.Reset组件是否需要
-* 可视化配置界面，需要列出每个组件的可配置项，比如Select包括单、多选模式，是否能搜索等。
+* [ ] 异步数据源以及keyPath、valuePath配置
+* [ ] 其他字段变化时，控制当前字段的禁用：disableWhen
+* [ ] 新建、更新模式下，是否隐藏、禁用
+* [ ] Form.Submit、Form.Reset组件是否需要
+* [ ] 可视化配置界面，需要列出每个组件的可配置项，比如Select包括单、多选模式，是否能搜索等。
